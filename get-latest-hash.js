@@ -41,7 +41,7 @@ async function getLatestHash(config) {
 
   switch (gitRepoInfo.hostType) {
   case "github-pages":
-    const api_url = [ "https://api.github.com/repos/",
+    const api_url = [ "https://api.github.com/repos",
                       gitRepoInfo.username,
                       gitRepoInfo.repo,
                       "commits",

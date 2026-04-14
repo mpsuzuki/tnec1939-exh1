@@ -1,0 +1,14 @@
+{
+  "displayColumns": [
+    "sequence",
+    "company",
+    "city",
+    "state",
+    "acquirer",
+    "date",
+    "commodities_handled"
+  ],
+  "defaultColumn": "company",
+  "maxCandidates": 10,
+  "csvURL": "tnec1939-exh1.csv"
+}

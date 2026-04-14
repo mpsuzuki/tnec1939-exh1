@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>TNEC 1939 "Exhibit I" Search</title>
+  <style>
+    body { font-family: sans-serif; }
+    #results-table { border-collapse: collapse; margin-top: 1em; }
+    #results-table th, #results-table td {
+      border: 1px solid #ccc;
+      padding: 4px 8px;
+      font-size: 0.9rem;
+    }
+    #status { margin-top: 0.5em; color: #555; }
+  </style>
+</head>
+<body>
+  <h1>Search TNEC 1939 pp.3164–3178 "Exhibit I"</h1>
+
+  <div>
+    <label for="column-select">Search Column:</label>
+    <select id="column-select"></select>
+  </div>
+
+  <div>
+    <label for="query-input">Substring to Search:</label>
+    <input id="query-input" type="text" autocomplete="off" />
+  </div>
+
+  <div id="status"></div>
+
+  <table id="results-table">
+    <thead id="results-thead"></thead>
+    <tbody id="results-tbody"></tbody>
+  </table>
+
+  <script>
+    let CONFIG = null;
+    let headers = [];
+    let rows = [];
+
+    // Load config.json
+    async function loadConfig() {
+      const res = await fetch("config.json");
+      if (!res.ok) throw new Error("Failed to load config.json");
+      CONFIG = await res.json();
+    }
+
+    // Convert header name to safe CSS class
+    function toCssClassName(name) {
+      return "col_" + name.replace(/[^a-zA-Z0-9_-]/g, "_");
+    }
+
+    // Determine which columns to show and in what order
+    function getDisplayColumnIndices() {
+      const display = CONFIG.displayColumns;
+      const indices = [];
+
+      display.forEach(colName => {
+        const idx = headers.indexOf(colName);
+        if (idx !== -1) indices.push(idx);
+      });
+
+      return indices;
+    }
+
+    // Initialize UI
+    function setupUI() {
+      const select = document.getElementById("column-select");
+      const thead = document.getElementById("results-thead");
+
+      const displayIndices = getDisplayColumnIndices();
+
+      // Populate dropdown
+      displayIndices.forEach(idx => {
+        const h = headers[idx];
+        const opt = document.createElement("option");
+        opt.value = idx;
+        opt.textContent = h;
+        opt.className = toCssClassName(h);
+
+        // select if this option matches with CONFIG.defaultColumn
+        if (CONFIG.defaultColumn && CONFIG.defaultColumn === h) {
+          opt.selected = true;
+        }
+
+        select.appendChild(opt);
+      });
+
+      // Build table header
+      const tr = document.createElement("tr");
+      displayIndices.forEach(idx => {
+        const th = document.createElement("th");
+        th.textContent = headers[idx];
+        th.className = toCssClassName(headers[idx]);
+        tr.appendChild(th);
+      });
+      thead.appendChild(tr);
+
+      // Event listeners
+      document.getElementById("query-input").addEventListener("input", updateResults);
+      select.addEventListener("change", updateResults);
+
+      updateResults();
+    }
+
+    // Update search results
+    function updateResults() {
+      const tbody = document.getElementById("results-tbody");
+      const status = document.getElementById("status");
+
+      tbody.innerHTML = "";
+      status.textContent = "";
+
+      const query = document.getElementById("query-input").value;
+      const colIndex = parseInt(document.getElementById("column-select").value, 10);
+
+      if (!query) {
+        status.textContent = "Please enter a search string.";
+        return;
+      }
+
+      const matched = [];
+      for (const row of rows) {
+        const cell = row[colIndex] ?? "";
+        if (cell.includes(query)) {
+          matched.push(row);
+          if (matched.length > 10) break;
+        }
+      }
+
+      if (matched.length === 0) {
+        status.textContent = "No matching rows found.";
+        return;
+      }
+
+      if (matched.length > 10) {
+        status.textContent = "More than 10 matches found. Please narrow your search.";
+        return;
+      }
+
+      const displayIndices = getDisplayColumnIndices();
+
+      // Render matched rows
+      for (const row of matched) {
+        const tr = document.createElement("tr");
+
+        displayIndices.forEach(idx => {
+          const td = document.createElement("td");
+          td.textContent = row[idx] ?? "";
+          td.className = toCssClassName(headers[idx]);
+          tr.appendChild(td);
+        });
+
+        tbody.appendChild(tr);
+      }
+
+      status.textContent = matched.length + " match(es) found.";
+    }
+
+    // Load CSV and initialize
+    async function loadCsvAndInit() {
+      try {
+        const res = await fetch(CONFIG.csvURL);
+        if (!res.ok) throw new Error("Failed to fetch CSV: " + res.status);
+
+        const text = await res.text();
+        const data = parseCsv(text);
+
+        if (data.length === 0) {
+          document.getElementById("status").textContent = "CSV contains no data.";
+          return;
+        }
+
+        headers = data[0];
+        rows = data.slice(1);
+
+        setupUI();
+      } catch (e) {
+        console.error(e);
+        document.getElementById("status").textContent = "Load error: " + e.message;
+      }
+    }
+
+    // CSV parser (RFC4180-style)
+    function parseCsv(text) {
+      text = text.replace(/\r\n|\r/g, "\n");
+
+      const rows = [];
+      let currentRow = [];
+      let currentCell = "";
+      let inQuotes = false;
+
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        const nextChar = text[i + 1];
+
+        if (inQuotes) {
+          if (char === '"') {
+            if (nextChar === '"') {
+              currentCell += '"';
+              i++;
+            } else {
+              inQuotes = false;
+            }
+          } else {
+            currentCell += char;
+          }
+        } else {
+          if (char === '"') {
+            inQuotes = true;
+          } else if (char === ",") {
+            currentRow.push(currentCell);
+            currentCell = "";
+          } else if (char === "\n") {
+            currentRow.push(currentCell);
+            rows.push(currentRow);
+            currentRow = [];
+            currentCell = "";
+          } else {
+            currentCell += char;
+          }
+        }
+      }
+
+      if (currentCell !== "" || inQuotes || currentRow.length > 0) {
+        currentRow.push(currentCell);
+        rows.push(currentRow);
+      }
+
+      return rows;
+    }
+
+    // Copy cell text to clipboard + flash background
+    document.getElementById("results-tbody").addEventListener("click", async (e) => {
+      if (e.target.tagName !== "TD") return;
+
+      const td = e.target;
+      const text = td.textContent;
+
+      try {
+        await navigator.clipboard.writeText(text);
+
+        td.style.transition = "background-color 0.4s";
+        td.style.backgroundColor = "#ffb7d5";
+
+        setTimeout(() => {
+          td.style.backgroundColor = "";
+        }, 400);
+
+      } catch (err) {
+        console.error("Copy failed:", err);
+        alert("Failed to copy to clipboard (HTTPS or localhost required).");
+      }
+    });
+
+    // Startup sequence
+    window.addEventListener("DOMContentLoaded", async () => {
+      try {
+        await loadConfig();
+        await loadCsvAndInit();
+      } catch (e) {
+        console.log(e);
+        document.getElementById("status").textContent = e.message;
+      }
+    });
+  </script>
+</body>
+</html>

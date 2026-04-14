@@ -44,6 +44,7 @@ async function getLatestHash(config) {
     const api_url = [ "https://api.github.com/repos/",
                       gitRepoInfo.username,
                       gitRepoInfo.repo,
+                      "commits",
                       gitRepoInfo.branch ].join("/");
     const res = await fetch(api_url);
     const data = await res.json();

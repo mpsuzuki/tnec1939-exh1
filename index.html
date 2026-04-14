@@ -34,6 +34,7 @@
     <tbody id="results-tbody"></tbody>
   </table>
 
+  <script src="get-latest-hash.js"></script>
   <script>
     let CONFIG = null;
     let headers = [];
@@ -44,6 +45,7 @@
       const res = await fetch("config.json");
       if (!res.ok) throw new Error("Failed to load config.json");
       CONFIG = await res.json();
+      CONFIG.hashLatest = await getLatestHash(CONFIG);      
     }
 
     // Convert header name to safe CSS class
@@ -161,7 +163,11 @@
     // Load CSV and initialize
     async function loadCsvAndInit() {
       try {
-        const res = await fetch(CONFIG.csvURL);
+        let csvURL = CONFIG.csvURL;
+        if (CONFIG.hashLatest) {
+          csvURL += ("?v=" + CONFIG.hashLatest);
+        }
+        const res = await fetch(csvURL);
         if (!res.ok) throw new Error("Failed to fetch CSV: " + res.status);
 
         const text = await res.text();

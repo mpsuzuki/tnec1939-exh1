@@ -127,7 +127,7 @@
         const cell = row[colIndex] ?? "";
         if (cell.includes(query)) {
           matched.push(row);
-          if (matched.length > 10) break;
+          if (matched.length > CONFIG.maxCandidates) break;
         }
       }
 
@@ -136,8 +136,10 @@
         return;
       }
 
-      if (matched.length > 10) {
-        status.textContent = "More than 10 matches found. Please narrow your search.";
+      if (matched.length > CONFIG.maxCandidates) {
+        status.textContent = ( "More than "
+                               + CONFIG.maxCandidates.toString(10)
+                               + " matches found. Please narrow your search." );
         return;
       }
 

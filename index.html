@@ -66,6 +66,44 @@
       return indices;
     }
 
+    // copy some text to clipboard and flash an element
+    async function copyTextWithFlash(text, element, flashColor = "#ffb7d5") {
+      try {
+        await navigator.clipboard.writeText(text);
+
+        element.style.transition = "background-color 0.4s";
+        element.style.backgroundColor = flashColor;
+        setTimeout(() => {
+          element.style.backgroundColor = "";
+        }, 400);
+      } catch (err) {
+        console.error("Copy failed:", err);
+        alert("Failed to copy column to clipboard (HTTPS or localhost is required).");
+      }
+    }
+
+    // event handler to copy all TD contents under specified TH
+    // assuming TH element has ".dataset.colIndex" property.
+    async function copyColumnFromHeader(e) {
+      const th = e.target.closest("th");
+      if (!th) return;
+
+      const colIndex = parseInt(th.dataset.colIndex, 10);
+
+      const tbody = document.getElementById("results-tbody");
+      const values = [];
+
+      for (const tr of tbody.querySelectorAll("tr")) {
+        const tds = tr.querySelectorAll("td");
+        const td = tds[colIndex];
+        values.push(td ? td.textContent : "");
+      }
+
+      const sep = CONFIG.separatorClipboard ?? "\n";
+      const text = values.join(sep);
+      copyTextWithFlash(text, th, "#c8eaff");
+    }
+
     // Initialize UI
     function setupUI() {
       const select = document.getElementById("column-select");
@@ -95,9 +133,11 @@
         const th = document.createElement("th");
         th.textContent = headers[idx];
         th.className = toCssClassName(headers[idx]);
+        th.dataset.colIndex = idx;
         tr.appendChild(th);
       });
       thead.appendChild(tr);
+      thead.addEventListener("click", copyColumnFromHeader);
 
       // Event listeners
       document.getElementById("query-input").addEventListener("input", updateResults);
@@ -246,20 +286,7 @@
       const td = e.target;
       const text = td.textContent;
 
-      try {
-        await navigator.clipboard.writeText(text);
-
-        td.style.transition = "background-color 0.4s";
-        td.style.backgroundColor = "#ffb7d5";
-
-        setTimeout(() => {
-          td.style.backgroundColor = "";
-        }, 400);
-
-      } catch (err) {
-        console.error("Copy failed:", err);
-        alert("Failed to copy to clipboard (HTTPS or localhost required).");
-      }
+      copyTextWithFlash(text, td, "#ffb7d5");
     });
 
     // Startup sequence

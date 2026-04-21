@@ -11,5 +11,6 @@
   "branch": "main",
   "defaultColumn": "company",
   "maxCandidates": 50,
+  "separatorClipboard": "\n",
   "csvURL": "tnec1939-exh1.csv"
 }

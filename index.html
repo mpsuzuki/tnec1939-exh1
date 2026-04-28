@@ -36,13 +36,14 @@
 
   <script src="get-latest-hash.js"></script>
   <script>
+    const urlSearchParams = new URLSearchParams(window.location.search);
     let CONFIG = null;
     let headers = [];
     let rows = [];
 
     // Load config.json
-    async function loadConfig() {
-      const res = await fetch("config.json");
+    async function loadConfig(config_filename) {
+      const res = await fetch(config_filename);
       if (!res.ok) throw new Error("Failed to load config.json");
       CONFIG = await res.json();
       CONFIG.hashLatest = await getLatestHash(CONFIG);      
@@ -326,7 +327,8 @@
     // Startup sequence
     window.addEventListener("DOMContentLoaded", async () => {
       try {
-        await loadConfig();
+        const config_json = urlSearchParams.get("config") || "config.json";
+        await loadConfig(config_json);
         await loadCsvAndInit();
       } catch (e) {
         console.log(e);

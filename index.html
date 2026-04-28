@@ -198,7 +198,25 @@
         displayIndices.forEach(idx => {
           const td = document.createElement("td");
           const t = row[idx] ?? "";
-          if (t.startsWith("http://") || t.startsWith("https://")) {
+          if (headers[idx] === "url-pages") {
+            const nodes = [];
+            t.split(";")
+             .forEach((pp) => {
+                pp.split("-").forEach((pg) => {
+                  const pa = document.createElement("a");
+                  pa.setAttribute("href", url + "&seq=" + pg);
+                  pa.appendChild( document.createTextNode(pg) );
+                  nodes.push( pa );
+                  nodes.push( document.createTextNode(" - ") );
+                })
+                nodes.pop(); // discard trailing "-"
+                nodes.push( document.createTextNode(" ; ") );
+              });
+            nodes.pop(); // discard trailing ";"
+            nodes.forEach((nd) => {
+              td.appendChild(nd);
+            });
+          } else if (t.startsWith("http://") || t.startsWith("https://")) {
             const tcgi = t + (CONFIG.urlSuffix ?? "");
             const a = document.createElement("a");
             const tn = document.createTextNode(tcgi);

@@ -1,0 +1,17 @@
+{
+  "displayColumns": [
+    "year",
+    "appear",
+    "url",
+    "vol",
+    "url-pages",
+    "cases"
+  ],
+  "branch": "main",
+  "defaultColumn": "appear",
+  "maxCandidates": 50,
+  "separatorClipboard": "\n",
+  "title": "NYSE-ListingStatements-Kraft",
+  "urlSuffix": "&q1=\"Kraft-Phenix\"",
+  "csvURL": "NYSE-ListingStatements-Kraft.csv"
+}

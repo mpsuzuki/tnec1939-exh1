@@ -192,10 +192,21 @@
       // Render matched rows
       for (const row of matched) {
         const tr = document.createElement("tr");
+        const url_idx = headers.indexOf("url") ?? headers.indexOf("URL") ?? "";
+        const url = row[url_idx];
 
         displayIndices.forEach(idx => {
           const td = document.createElement("td");
-          td.textContent = row[idx] ?? "";
+          const t = row[idx] ?? "";
+          if (t.startsWith("http://") || t.startsWith("https://")) {
+            const a = document.createElement("a");
+            const tn = document.createTextNode(t);
+            a.setAttribute("href", t);
+            a.appendChild(tn);
+            td.appendChild(a);
+          } else {
+            td.textContent = t;
+          }
           td.className = toCssClassName(headers[idx]);
           tr.appendChild(td);
         });

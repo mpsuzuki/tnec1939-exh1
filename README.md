@@ -33,6 +33,6 @@ as if they had been purchased.
 To help examine and debug the table, this repository provides a
 machine-readable CSV version and a simple search tool.
 
-[NDPC - NYSE Listing Statements](https://mpsuzuki.github.io/tnec1939-exh1/?config=ndpc.json)
-[Kraft - NYSE Listing Statements](https://mpsuzuki.github.io/tnec1939-exh1/?config=kraft.json)
-[Southern Dairies - NYSE Listing Statements](https://mpsuzuki.github.io/tnec1939-exh1/?config=sd.json)
+* [NDPC - NYSE Listing Statements](https://mpsuzuki.github.io/tnec1939-exh1/?config=ndpc.json)
+* [Kraft - NYSE Listing Statements](https://mpsuzuki.github.io/tnec1939-exh1/?config=kraft.json)
+* [Southern Dairies - NYSE Listing Statements](https://mpsuzuki.github.io/tnec1939-exh1/?config=sd.json)

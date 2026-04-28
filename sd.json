@@ -1,0 +1,17 @@
+{
+  "displayColumns": [
+    "year",
+    "appear",
+    "url",
+    "vol",
+    "url-pages",
+    "cases"
+  ],
+  "branch": "main",
+  "defaultColumn": "appear",
+  "maxCandidates": 50,
+  "separatorClipboard": "\n",
+  "title": "NYSE-ListingStatements-SouthernDairies",
+  "urlSuffix": "&q1=\"Southern Dairies\"",
+  "csvURL": "NYSE-ListingStatements-SouthernDairies.csv"
+}

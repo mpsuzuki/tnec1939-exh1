@@ -49,7 +49,7 @@
             title = title.substring(0, mYearBraced.index);
             year = '"' + mYearBraced[1] + '"';
           }
-     
+
           let volume = "";
           const mVolume = title.match(/\s*v\.([0-9]+)\s*$/);
           if (mVolume) {
@@ -60,7 +60,7 @@
           if (title.includes(",")) {
             title = '"' + title + '"';
           }
- 
+
           rows.push([title, year, volume, url]);
         });
         const csvText = rows.map((row) => {

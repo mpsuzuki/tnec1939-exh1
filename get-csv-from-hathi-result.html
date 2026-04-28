@@ -1,0 +1,85 @@
+<!DOCTYPE>
+<html lang="en">
+  <head>
+    <title>Parse Saved Search Results by HathiTrust</title>
+  </head>
+  <body>
+    <input type="file" id="fileInput" accept=".html,.htm">
+    <pre id="log"></pre>
+
+    <script>
+      const prelog = document.getElementById("log");
+      document.getElementById("fileInput").addEventListener("change", async (e) => {
+        [...document.querySelectorAll("a.download-csv")].forEach((a) => {a.remove();});
+        prelog.textContent = "";
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const text = await file.text();
+
+        // Create DOM by DOMParser
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(text, "text/html");
+
+        prelog.textContent = "Parse OK";
+
+        // call parser
+        const csvText = parseHathiTrustResult(doc);
+        const aCSV = createDownloadLink(csvText, replaceSuffix(file.name, "csv"));
+        prelog.parentElement.insertBefore(aCSV, prelog);
+      });
+
+      function replaceSuffix(s, suffix) {
+        let toks = s.split(".");
+        toks.pop();
+        toks.push(suffix);
+        return toks.join(".");
+      }
+
+      function parseHathiTrustResult(doc) {
+        let rows = [["title", "year", "volume", "url"]];
+        [...doc.querySelectorAll("article.record")].forEach((atcl) => {
+          const url = atcl.querySelector("a.list-group-item.active").getAttribute("href");
+          const titleOrig = atcl.querySelector("h3.record-title").textContent;
+          let title = titleOrig;
+
+          let year = "";
+          const mYearBraced = title.match(/\s*\(\s*([0-9]{4}\/?[0-9]{0,4})\s*\)\s*$/);
+          if (mYearBraced) {
+            title = title.substring(0, mYearBraced.index);
+            year = '"' + mYearBraced[1] + '"';
+          }
+     
+          let volume = "";
+          const mVolume = title.match(/\s*v\.([0-9]+)\s*$/);
+          if (mVolume) {
+            title = title.substring(0, mVolume.index);
+            volume = '"' + mVolume[1] + '"';
+          }
+
+          if (title.includes(",")) {
+            title = '"' + title + '"';
+          }
+ 
+          rows.push([title, year, volume, url]);
+        });
+        const csvText = rows.map((row) => {
+          return row.join(",");
+        }).join("\n");
+        prelog.textContent = csvText;
+        return csvText;
+      }
+
+      function createDownloadLink(csvText, csvFileName) {
+        const blob = new Blob([csvText], {type: "text/csv"});
+        const urlCSV = URL.createObjectURL(blob);
+        const aCSV = document.createElement("a");
+        aCSV.href = urlCSV;
+        aCSV.download = csvFileName;
+        aCSV.textContent = "Download CSV File";
+        aCSV.classList.add("download-csv");
+        return aCSV;
+      }
+    </script>
+  </body>
+</html>

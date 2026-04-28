@@ -199,9 +199,10 @@
           const td = document.createElement("td");
           const t = row[idx] ?? "";
           if (t.startsWith("http://") || t.startsWith("https://")) {
+            const tcgi = t + (CONFIG.urlSuffix ?? "");
             const a = document.createElement("a");
-            const tn = document.createTextNode(t);
-            a.setAttribute("href", t);
+            const tn = document.createTextNode(tcgi);
+            a.setAttribute("href", tcgi);
             a.appendChild(tn);
             td.appendChild(a);
           } else {

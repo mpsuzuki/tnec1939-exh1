@@ -15,7 +15,7 @@
   </style>
 </head>
 <body>
-  <h1>Search TNEC 1939 pp.3164–3178 "Exhibit I"</h1>
+  <h1 id="body-title">Search TNEC 1939 pp.3164–3178 "Exhibit I"</h1>
 
   <div>
     <label for="column-select">Search Column:</label>
@@ -46,6 +46,10 @@
       if (!res.ok) throw new Error("Failed to load config.json");
       CONFIG = await res.json();
       CONFIG.hashLatest = await getLatestHash(CONFIG);      
+      if (CONFIG.title) {
+        document.title = CONFIG.title;
+        document.getElementById("body-title").textContent = CONFIG.title;
+      }
     }
 
     // Convert header name to safe CSS class

@@ -151,6 +151,23 @@
       updateResults();
     }
 
+    // Do the first search
+    function firstSearch() {
+      let doSearch = 0;
+      const opt = document.getElementById("column-select");
+      const qInput = document.getElementById("query-input");
+      urlSearchParams.forEach((v, k) => {
+        const i = headers.indexOf(k);
+        if (i < 0)
+          return;
+        opt.selectedIndex = i;
+        qInput.value = v;
+        doSearch += 1;
+      });
+      if (0 < doSearch)
+        updateResults();
+    }
+
     // Update search results
     function updateResults() {
       const tbody = document.getElementById("results-tbody");
@@ -260,6 +277,7 @@
         rows = data.slice(1);
 
         setupUI();
+        firstSearch();
       } catch (e) {
         console.error(e);
         document.getElementById("status").textContent = "Load error: " + e.message;

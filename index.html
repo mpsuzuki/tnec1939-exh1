@@ -46,7 +46,7 @@
       const res = await fetch(config_filename);
       if (!res.ok) throw new Error("Failed to load config.json");
       CONFIG = await res.json();
-      CONFIG.hashLatest = await getLatestHash(CONFIG);      
+      CONFIG.hashLatest = await getLatestHash(CONFIG);
       if (CONFIG.title) {
         document.title = CONFIG.title;
         document.getElementById("body-title").textContent = CONFIG.title;

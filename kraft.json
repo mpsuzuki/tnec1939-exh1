@@ -13,5 +13,6 @@
   "separatorClipboard": "\n",
   "title": "NYSE-ListingStatements-Kraft",
   "urlSuffix": "&q1=\"Kraft-Phenix\"",
+  "templateURLSuffixPage": "&seq={page}",
   "csvURL": "NYSE-ListingStatements-Kraft.csv"
 }

@@ -13,5 +13,6 @@
   "separatorClipboard": "\n",
   "title": "NYSE-ListingStatements-NDPC",
   "urlSuffix": "&q1=\"National+Dairy+Products\"",
+  "templateURLSuffixPage": "&seq={page}",
   "csvURL": "NYSE-ListingStatements-NDPC.csv"
 }

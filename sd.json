@@ -13,5 +13,6 @@
   "separatorClipboard": "\n",
   "title": "NYSE-ListingStatements-SouthernDairies",
   "urlSuffix": "&q1=\"Southern Dairies\"",
+  "templateURLSuffixPage": "&seq={page}",
   "csvURL": "NYSE-ListingStatements-SouthernDairies.csv"
 }

@@ -241,7 +241,7 @@
               });
             nodes.pop(); // discard trailing ";"
             nodes.forEach((nd) => { td.appendChild(nd); });
-          } else if (headers[idx] === "cases") {
+          } else if (["cases", "appear"].includes(headers[idx])) {
             td.textContent = t.split(/\s*;\s*/).join("; ");
           } else if (t.startsWith("http://") || t.startsWith("https://")) {
             const tcgi = t + (CONFIG.urlSuffix ?? "");

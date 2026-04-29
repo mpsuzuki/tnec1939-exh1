@@ -12,6 +12,7 @@
       font-size: 0.9rem;
     }
     #status { margin-top: 0.5em; color: #555; }
+    span.page-range { display:inline-block; }
   </style>
 </head>
 <body>
@@ -220,21 +221,26 @@
             const nodes = [];
             t.split(";")
              .forEach((pp) => {
+                const subnodes = [];
                 pp.split("-").forEach((pg) => {
                   const pa = document.createElement("a");
                   const urlPage = url + CONFIG.templateURLSuffixPage.replace("{page}", pg);
                   pa.setAttribute("href", url + "&seq=" + pg);
                   pa.appendChild( document.createTextNode(pg) );
-                  nodes.push( pa );
-                  nodes.push( document.createTextNode("\u2013") );
+                  subnodes.push( pa );
+                  subnodes.push( document.createTextNode("\u2013") );
                 })
-                nodes.pop(); // discard trailing "-"
+                subnodes.pop(); // discard trailing "-"
+
+                const spn = document.createElement("span");
+                spn.classList.add("page-range");
+                subnodes.forEach((nd) => { spn.appendChild(nd); });
+                nodes.push( spn );
+
                 nodes.push( document.createTextNode("; ") );
               });
             nodes.pop(); // discard trailing ";"
-            nodes.forEach((nd) => {
-              td.appendChild(nd);
-            });
+            nodes.forEach((nd) => { td.appendChild(nd); });
           } else if (headers[idx] === "cases") {
             td.textContent = t.split(/\s*;\s*/).join("; ");
           } else if (t.startsWith("http://") || t.startsWith("https://")) {

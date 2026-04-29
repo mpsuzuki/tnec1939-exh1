@@ -226,15 +226,17 @@
                   pa.setAttribute("href", url + "&seq=" + pg);
                   pa.appendChild( document.createTextNode(pg) );
                   nodes.push( pa );
-                  nodes.push( document.createTextNode(" - ") );
+                  nodes.push( document.createTextNode("\u2013") );
                 })
                 nodes.pop(); // discard trailing "-"
-                nodes.push( document.createTextNode(" ; ") );
+                nodes.push( document.createTextNode("; ") );
               });
             nodes.pop(); // discard trailing ";"
             nodes.forEach((nd) => {
               td.appendChild(nd);
             });
+          } else if (headers[idx] === "cases") {
+            td.textContent = t.split(/\s*;\s*/).join("; ");
           } else if (t.startsWith("http://") || t.startsWith("https://")) {
             const tcgi = t + (CONFIG.urlSuffix ?? "");
             const a = document.createElement("a");
